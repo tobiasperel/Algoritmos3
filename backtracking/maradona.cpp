@@ -18,7 +18,9 @@ void encontrarMejorFormacion(vector<string>&nombres,vector<int>ataque,vector<int
         nombres = formacion;
         return;
     }
-    
+    for(int i=index;i<10;i++){
+        if(sumaAtacantes>)
+    }
 }
 
 int main(){
