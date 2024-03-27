@@ -14,7 +14,7 @@ void findCombinations(vector<int>numeros,vector<int>&temporal,int index, int sum
     }
 
     for (int i=index;i<numeros.size();i++){
-        // if(i!= index && numeros[i]  ==  numeros[i-1]) continue; // cuando i= index significa que estas al comienzo de una rama y que no necesariamente el elemento que tenes antes lo analisaste.
+        if(i!= index && numeros[i]  ==  numeros[i-1]) continue; // cuando i= index significa que estas al comienzo de una rama y que no necesariamente el elemento que tenes antes lo analisaste.
         if(suma + numeros[i]<= objetivo){
             temporal.push_back(numeros[i]);
             findCombinations(numeros,temporal,i+1,suma + numeros[i],objetivo);
