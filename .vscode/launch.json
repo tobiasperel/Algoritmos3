@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "e:/Programacion/UBA/Algoritmos3/backtracking",
-      "program": "e:/Programacion/UBA/Algoritmos3/backtracking/build/Debug/outDebug",
+      "cwd": "e:/Programacion/UBA/Algoritmos3/programacionDinamica",
+      "program": "e:/Programacion/UBA/Algoritmos3/programacionDinamica/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
