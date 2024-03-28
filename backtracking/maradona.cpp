@@ -18,7 +18,6 @@ struct jugador
 
 vector<jugador> jugadores;
 vector<jugador> ganadorProvisorio;
-vector<vector<jugador>> ganadores;
 
 bool compareFormations(const vector<jugador>& a, const vector<jugador>& b) {
         return a[0].nombre < b[0].nombre;
@@ -54,6 +53,8 @@ void bubbleSort2(vector<jugador> &ganadorProvisorio){
         }
     }
 }
+vector<bool> esDelanteroParcial (10,false);
+vector<bool> esDelanteroDef (10,false);
 
 void encontrarMejorFormacion(vector<jugador>jugadores , vector<jugador> &parcial,int sumaAtacantes, int sumaDefensa, int index)
 {
@@ -65,16 +66,19 @@ void encontrarMejorFormacion(vector<jugador>jugadores , vector<jugador> &parcial
             recordAtaque = sumaAtacantes;
             recordDefensa = sumaDefensa;
             ganadorProvisorio = parcial;
+            esDelanteroDef = esDelanteroParcial;
         }
         return;
     }
     for (int i = index; i < 10; i++)
     {
         parcial.push_back(jugadores[i]);
+        esDelanteroParcial[i] = true;
         encontrarMejorFormacion(jugadores, parcial,
                                 sumaAtacantes + jugadores[i].ataque, sumaDefensa + jugadores[i].defensa,
                                 i + 1);
         parcial.pop_back();
+        esDelanteroParcial[i] = false;
     }
 }
 
@@ -85,6 +89,7 @@ int main()
     string nombre;
     int ataque;
     int defensa;
+    string superFrase;
     vector<jugador> parcial; // Add this line
     for (int caso = 0; caso < casos; caso++){
         for (int i = 0; i < 10; i++)
@@ -102,14 +107,7 @@ int main()
         
         // agergar a los 5 jugadores restantes
         for (int i=0; i <10;i++){
-            bool found = false;
-            for (int j=0; j<10;j++){
-                if (jugadores[i].nombre == ganadorProvisorio[j].nombre){
-                    found = true;
-                    break;
-                }
-            }
-            if (!found){
+            if (!esDelanteroDef[i]){
                 ganadorProvisorio.push_back(jugadores[i]);
             }
         }
@@ -134,12 +132,16 @@ int main()
             }
             formacionDefensores += ganadorProvisorio[i].nombre + ", ";
         }
-        cout <<"Case " + to_string(caso + 1) + ":" << endl << formacionDelanteros << endl << formacionDefensores;
+        superFrase += "Case " + to_string(caso + 1) + ":" + "\n" + formacionDelanteros + "\n" + formacionDefensores+ "\n";
         recordAtaque = 0;
         recordDefensa = 0;
         jugadores.clear();
         ganadorProvisorio.clear();
+        parcial.clear();
+        formacionDefensores.clear();
+        formacionDelanteros.clear();
 
     }    
+    cout << superFrase<<endl;
     return 0;
 }
