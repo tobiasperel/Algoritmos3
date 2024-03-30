@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include<algorithm>
 using namespace std;
 
 int recordAtaque = 0;
@@ -19,40 +20,17 @@ struct jugador
 vector<jugador> jugadores;
 vector<jugador> ganadorProvisorio;
 
-bool compareFormations(const vector<jugador>& a, const vector<jugador>& b) {
-        return a[0].nombre < b[0].nombre;
-}
-
-void bubbleSort1(vector<jugador> &ganadorProvisorio)
-{
-    for (int i = 0; i < 5; i++)
-    {
-        for (int j = 0; j < 4 - i; j++)
-        {
-            if (ganadorProvisorio[j].nombre > ganadorProvisorio[j + 1].nombre)
-            {
-                jugador temp = ganadorProvisorio[j];
-                ganadorProvisorio[j] = ganadorProvisorio[j + 1];
-                ganadorProvisorio[j + 1] = temp;
-            }
+bool compareFormations(vector<jugador> a, vector<jugador> b) {
+    sort(a.begin(), a.end());
+    sort(b.begin(), b.end());
+    for (int i = 0; i < 5; i++) {
+        if (a[i].nombre < b[i].nombre) {
+            return true;
         }
     }
+    return false;
 }
 
-void bubbleSort2(vector<jugador> &ganadorProvisorio){
-    for (int i = 5; i < 10; i++)
-    {
-        for (int j = 5; j < 14 - i; j++)
-        {
-            if (ganadorProvisorio[j].nombre > ganadorProvisorio[j + 1].nombre)
-            {
-                jugador temp = ganadorProvisorio[j];
-                ganadorProvisorio[j] = ganadorProvisorio[j + 1];
-                ganadorProvisorio[j + 1] = temp;
-            }
-        }
-    }
-}
 vector<bool> esDelanteroParcial (10,false);
 vector<bool> esDelanteroDef (10,false);
 
@@ -62,7 +40,7 @@ void encontrarMejorFormacion(vector<jugador>jugadores , vector<jugador> &parcial
     if (parcial.size() == 5)
     {
         if (sumaAtacantes > recordAtaque ||
-            (sumaAtacantes == recordAtaque) & (sumaDefensa < recordDefensa) || (sumaAtacantes == recordAtaque && sumaDefensa == recordDefensa &&  compareFormations(parcial, ganadorProvisorio)   ) ){
+            (sumaAtacantes == recordAtaque) && (sumaDefensa < recordDefensa) || (sumaAtacantes == recordAtaque && sumaDefensa == recordDefensa &&  compareFormations(parcial, ganadorProvisorio)   ) ){
             recordAtaque = sumaAtacantes;
             recordDefensa = sumaDefensa;
             ganadorProvisorio = parcial;
@@ -103,7 +81,7 @@ int main()
         }
         
         encontrarMejorFormacion(jugadores, parcial, 0, 0, 0);
-        bubbleSort1(ganadorProvisorio);
+        sort(ganadorProvisorio.begin(), ganadorProvisorio.end()); 
         
         // agergar a los 5 jugadores restantes
         for (int i=0; i <10;i++){
@@ -111,8 +89,7 @@ int main()
                 ganadorProvisorio.push_back(jugadores[i]);
             }
         }
-        
-        bubbleSort2(ganadorProvisorio);
+        sort(ganadorProvisorio.begin()+5, ganadorProvisorio.end());
         string formacionDelanteros = "(";
         for (int i = 0; i < 5; i++)
         {
