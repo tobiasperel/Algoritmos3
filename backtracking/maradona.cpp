@@ -119,6 +119,6 @@ int main()
         formacionDelanteros.clear();
 
     }    
-    cout << superFrase<<endl;
+    cout << superFrase;
     return 0;
 }
