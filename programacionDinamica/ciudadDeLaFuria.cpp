@@ -1,99 +1,61 @@
 #include<iostream>
 #include<vector>
-#include <climits>
+#include<algorithm>
 
 using namespace std;
 
-struct edifio{
-    int height;
-    int width;
+struct edificio{
+    int altura;
+    int ancho;
 };
-
-int recordCrecimiento =0;
-int recordDecrecimiento =0;
-
-vector<int>dp;
-
-
-int calcularCremiento(vector<edifio>&data,int numeroDeEdificios, int index, int sumaParcial,vector<edifio>parcial,int alturaAnterior){
-    if(index == numeroDeEdificios){
-        if(sumaParcial>recordCrecimiento){
-            recordCrecimiento = sumaParcial;
-        }
-        return 0;
-    }
-    
-    for(int i = index;i<numeroDeEdificios;i++){
-        if(data[i].height>alturaAnterior){
-            if(dp[index]!=-1){
-                return dp[index];
-            }   
-            parcial.push_back(data[i]);
-            dp[i] = data[i].height+calcularCremiento(data,numeroDeEdificios,i+1,sumaParcial+data[i].width,parcial,data[i].height);
-            parcial.pop_back();
-        }
-    }
-    if(sumaParcial>recordCrecimiento){
-        recordCrecimiento = sumaParcial;
-    }
-    return sumaParcial;
-}
-
-int calcularDeCremiento(vector<edifio>&data,int numeroDeEdificios, int index, int sumaParcial,vector<edifio>parcial,int alturaAnterior){
-    
-    if(index == numeroDeEdificios){
-        return 0;
-    }
-    if(dp[index]!=-1){
-        return dp[index];
-    }
-    for(int i = index;i<numeroDeEdificios;i++){
-        if(data[i].height<alturaAnterior){
-            parcial.push_back(data[i]);
-            dp[i] = calcularCremiento(data,numeroDeEdificios,i+1,sumaParcial+data[i].width,parcial,data[i].height);
-            parcial.pop_back();
-        }
-    }
-    return sumaParcial;
-}
-
 
 int main(){
     int casos;
-    string superFrase= "";
-    cin>> casos;
-    for(int caso = 0; caso<casos;caso++){
+    cin >> casos;
+    
+    string superFrase = "";
+    
+    for(int caso = 0; caso < casos; caso++){
         int numeroDeEdificios;
-        cin>> numeroDeEdificios;
-        vector<edifio>data;
-        vector<edifio>parcial;
-        int medida;
-        for(int i=0; i<numeroDeEdificios;i++){
-            cin>>medida;
-            edifio temp;
-            temp.height = medida;
-            data.push_back(temp);
-        }
-        for(int i=0; i<numeroDeEdificios;i++){
-            cin>>medida;
-            data[i].width = medida;
+        cin >> numeroDeEdificios;
+        
+        vector<edificio> edificios(numeroDeEdificios);
+        vector<int> crecimiento(numeroDeEdificios);
+        vector<int> decrecimiento(numeroDeEdificios);
+        
+        for(int i = 0; i < numeroDeEdificios; i++){
+            cin >> edificios[i].altura;
         }
         
-        for(int i = 0; i<numeroDeEdificios;i++){
-            dp.push_back(-1);
+        for(int i = 0; i < numeroDeEdificios; i++){
+            cin >> edificios[i].ancho;
         }
-        calcularCremiento(data,numeroDeEdificios,0,0,parcial,0);
-        for(int i = 0; i<numeroDeEdificios;i++){
-            dp.push_back(-1);
+        
+        for(int i = 0; i < numeroDeEdificios; i++){
+            crecimiento[i] = decrecimiento[i] = edificios[i].ancho;
         }
-        recordDecrecimiento =  calcularDeCremiento(data,numeroDeEdificios,0,0,parcial,INT_MAX);
-        if(recordCrecimiento>=recordDecrecimiento)
-            superFrase += "Case " + to_string(caso + 1) + ". Increasing (" + to_string(recordCrecimiento)+  "). Decreasing (" +to_string(recordDecrecimiento) + ").\n";
+        
+        for(int i = 1; i < numeroDeEdificios; i++){
+            for(int j = 0; j < i; j++){
+                if(edificios[i].altura > edificios[j].altura){
+                    crecimiento[i] = max(crecimiento[i], crecimiento[j] + edificios[i].ancho);
+                }
+                else if(edificios[i].altura < edificios[j].altura){
+                    decrecimiento[i] = max(decrecimiento[i], decrecimiento[j] + edificios[i].ancho);
+                }
+            }
+        }
+        
+        int maxCrecimiento = *max_element(crecimiento.begin(), crecimiento.end());
+        int maxDecrecimiento = *max_element(decrecimiento.begin(), decrecimiento.end());
+        
+        if(maxCrecimiento >= maxDecrecimiento)
+            superFrase += "Case " + to_string(caso + 1) + ". Increasing (" + to_string(maxCrecimiento) + "). Decreasing (" + to_string(maxDecrecimiento) + ").\n";
         else
-            superFrase += "Case " + to_string(caso + 1) + ". Decreasing (" + to_string(recordDecrecimiento)+  "). Increasing (" +to_string(recordCrecimiento) + ").\n";
-        recordCrecimiento =0;
-        recordDecrecimiento =0;
+            superFrase += "Case " + to_string(caso + 1) + ". Decreasing (" + to_string(maxDecrecimiento) + "). Increasing (" + to_string(maxCrecimiento) + ").\n";
     }
-    cout<<superFrase;
+    
+    cout << superFrase;
+    
     return 0;
 }
