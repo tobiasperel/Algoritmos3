@@ -4,7 +4,8 @@
     "vector": "cpp",
     "ostream": "cpp",
     "iostream": "cpp",
-    "climits": "cpp"
+    "climits": "cpp",
+    "limits": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",
