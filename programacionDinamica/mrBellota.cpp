@@ -11,28 +11,27 @@ int caidaPorSalto;
 int cantidadArboles;
 vector<int>maximoPorFila;
 
-int calcularMejorRecorrido(int altura, int arbolActual){
-    for(int i= 0; i< alturaHistorica; i++){
-        for(int j = 0; j < cantidadArboles; j++){
-            if(DP[j][i] == -1){
-                if(i == 0){
-                    DP[j][i] = bellotas[j][i] ;
-                }
-                else if(i- caidaPorSalto < 0){
-                    DP[j][i] = bellotas[j][i] + DP[j][i-1];
-                }else{
-                    DP[j][i] = bellotas[j][i] + max(DP[j][i-1],maximoPorFila[i-caidaPorSalto]);
+void calcularMejorRecorrido(int altura, int arbolActual) {
+    for(int i = 0; i < alturaHistorica; i++) {
+        for(int j = 0; j < cantidadArboles; j++) {
+            if(DP[j][i] == -1) {
+                if(i == 0) {
+                    DP[j][i] = bellotas[j][i];
+                } else if(i - caidaPorSalto < 0) {
+                    DP[j][i] = bellotas[j][i] + DP[j][i - 1];
+                } else {
+                    DP[j][i] = bellotas[j][i] + max(DP[j][i - 1], maximoPorFila[i - caidaPorSalto]);
                 }
             }
-            if(DP[j][i] > maximo){
+            if(DP[j][i] > maximo) {
                 maximo = DP[j][i];
             }
-            if(DP[j][i] > maximoPorFila[i]){
+            if(DP[j][i] > maximoPorFila[i]) {
                 maximoPorFila[i] = DP[j][i];
             }
         }
     }
-}    
+}
 
 int main(){
     vector<int> respuestas;
@@ -73,6 +72,7 @@ int main(){
         respuestas.push_back(maximo);
         bellotas.clear();
         DP.clear();
+        maximoPorFila.clear();
     }
     for(int i = 0; i < respuestas.size(); i++){
         cout<<respuestas[i]<<endl;
