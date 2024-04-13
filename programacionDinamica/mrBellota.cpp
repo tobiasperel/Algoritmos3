@@ -9,39 +9,29 @@ int maximo = -1;
 int alturaHistorica;
 int caidaPorSalto;
 int cantidadArboles;
+vector<int>maximoPorFila;
 
 int calcularMejorRecorrido(int altura, int arbolActual){
-    if(altura < 0){
-        return 0;
-    }
-    if(DP[arbolActual][altura] !=-1 ){
-        return DP[arbolActual][altura];
-    }
-    int parcial = 0;
-    for(int i=0; i<cantidadArboles;i++){
-        if(altura == alturaHistorica-1){
-            parcial =  bellotas[i][altura] + calcularMejorRecorrido(altura-1,i);
-            if(DP[arbolActual][altura]< parcial){
-                DP[arbolActual][altura] = parcial;
+    for(int i= 0; i< alturaHistorica; i++){
+        for(int j = 0; j < cantidadArboles; j++){
+            if(DP[j][i] == -1){
+                if(i == 0){
+                    DP[j][i] = bellotas[j][i] ;
+                }
+                else if(i- caidaPorSalto < 0){
+                    DP[j][i] = bellotas[j][i] + DP[j][i-1];
+                }else{
+                    DP[j][i] = bellotas[j][i] + max(DP[j][i-1],maximoPorFila[i-caidaPorSalto]);
+                }
             }
-        }
-        else if (i ==arbolActual){
-            parcial =  bellotas[arbolActual][altura] + calcularMejorRecorrido(altura-1,i);
-            if(DP[arbolActual][altura]< parcial){
-                DP[arbolActual][altura] = parcial;
+            if(DP[j][i] > maximo){
+                maximo = DP[j][i];
             }
-        }
-        else {
-            parcial =  bellotas[arbolActual][altura] + calcularMejorRecorrido(altura-caidaPorSalto,i);
-            if(DP[arbolActual][altura]< parcial){
-                DP[arbolActual][altura] = parcial;
+            if(DP[j][i] > maximoPorFila[i]){
+                maximoPorFila[i] = DP[j][i];
             }
         }
     }
-    if(DP[arbolActual][altura]>maximo){
-        maximo = DP[arbolActual][altura];
-    }
-    return DP[arbolActual][altura];
 }    
 
 int main(){
@@ -66,6 +56,7 @@ int main(){
             for(int k = 0;k <alturaArboles;k++){
                 DP[i].push_back(-1);
                 bellotas[i].push_back(0);
+                maximoPorFila.push_back(0);
             }
             for(int j = 0; j < cantidadDeBellotas; j++){
                 int alturaBellota;
