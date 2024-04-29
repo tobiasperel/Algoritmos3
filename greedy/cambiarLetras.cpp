@@ -9,60 +9,63 @@ vector<int> pasos;
 void cambiarLetras(string &p1, string &p2)
 {
 
-    vector<bool> p1A(p1.size(),false);
-    vector<bool> p2A(p2.size(),false);
+    // vector<bool> sonIguales(p1.size(), false);
+    // for (int i = 0; i < p1.size(); i++)
+    // {
+    //     if (p1[i] != p2[i])
+    //     {
+    //         sonIguales[i] = true
+    //     }
+    // }
+
+    int posicionAArriba = -1;
+    int posicionBArriba = -1;
+    int posicionAAbajo = -1;
+    int posicionBAbajo = -1;
+
     for (int i = 0; i < p1.size(); i++)
     {
         if (p1[i] != p2[i])
         {
             if (p1[i] == 'a')
             {
-                p1A[i] = true;
+                if (posicionAArriba != -1)
+                {
+                    pasos.push_back(posicionAArriba+1);
+                    pasos.push_back(i+1);
+                    posicionAArriba = -1;
+                    posicionBArriba = -1;
+                }
+                else
+                {
+                    posicionAArriba = i;
+                    posicionBArriba = i;
+                }
             }
             else
             {
-                p2A[i] = true;
-            }
-        }
-    }
-    queue<int>interinA;
-    queue<int>interinB;
-    for (int i = 0; i < p1.size(); i++)
-    {
-        if (p1[i] != p2[i])
-        {
-            if(p1A[i] == true){
-                if(interinB.empty()){
-                    interinA.push(i);
+                if (posicionAAbajo != -1)
+                {
+                    pasos.push_back(posicionAAbajo+1);
+                    pasos.push_back(i+1);
+                    posicionAAbajo = -1;
+                    posicionBAbajo = -1;
                 }
-                else{
-                    char aux = p2[interinB.front()];
-                    p2[interinB.front()] = p1[i];
-                    p1[i] = aux;
-                    pasos.push_back(i);
-                    pasos.push_back(interinB.front());
-                    interinA.pop();
-                    interinB.pop();
-                    
-                }
-            }
-            else{
-                if(interinA.empty()){
-                    interinB.push(i);
-                }
-                else{
-                    char aux = p2[interinA.front()];
-                    p2[interinA.front()] = p1[i];
-                    p1[i] = aux;
-                    pasos.push_back(i);
-                    pasos.push_back(interinA.front());
-                    interinA.pop();
-                    interinB.pop();
-                    
+                else
+                {
+                    posicionAAbajo = i;
+                    posicionBAbajo = i;
                 }
             }
         }
     }
+    if(posicionAAbajo != -1){
+        pasos.push_back(posicionAAbajo+1);
+        pasos.push_back(posicionBAbajo+1);
+        pasos.push_back(posicionAAbajo+1);
+        pasos.push_back(posicionBArriba+1);
+    }
+    
 }
 int main()
 {
@@ -107,8 +110,7 @@ int main()
         {
             cout << pasos[i] << " " << pasos[i + 1] << endl;
         }
-        cout << p1 << endl
-             << p2;
+        
     }
     return 0;
 }
