@@ -1,16 +1,15 @@
 #include<iostream>
 #include<vector>
-#include<queue>
 #include<algorithm>
 using namespace std;
 
-const int MAXN = 1000;
 vector<vector<int>> aristas;
 vector<bool> visitado;
 vector<int> hijos;
 vector<int> tin;
 vector<int> low;
 int tiempo;
+int n;
 
 void dfs(int v, int p){
     visitado[v] = true; 
