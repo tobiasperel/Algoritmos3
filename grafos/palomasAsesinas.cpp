@@ -9,7 +9,6 @@ vector<int> hijos;
 vector<int> tin;
 vector<int> low;
 int tiempo;
-int n;
 
 void dfs(int v, int p){
     visitado[v] = true; 
@@ -31,6 +30,7 @@ void dfs(int v, int p){
     }
     hijos[v] = hijo;
 }
+
 
 int main(){
     int n, m, u, v;
@@ -71,7 +71,7 @@ int main(){
         for(int i = 0; i < m && i < indices.size(); i++){
             superFrase += to_string(indices[i]) + " " + to_string(hijos[indices[i]] + 1) + "\n";
         }
-
+        superFrase += "\n";
         cin >> n >> m;
     }
     cout<<superFrase;
