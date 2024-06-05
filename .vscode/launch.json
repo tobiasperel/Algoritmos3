@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/perel/OneDrive/Documentos/Programacion/uba/Algoritmos3/dividirYGanar/sorting",
-      "program": "c:/Users/perel/OneDrive/Documentos/Programacion/uba/Algoritmos3/dividirYGanar/sorting/build/Debug/outDebug",
+      "cwd": "e:/Programacion/UBA/Algoritmos3/grafos/entregables",
+      "program": "e:/Programacion/UBA/Algoritmos3/grafos/entregables/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
