@@ -1,129 +1,99 @@
 #include <iostream>
 #include <vector>
-#include <tuple>
 #include <queue>
-#include <unordered_set>
-#include <string>
 
 using namespace std;
 
-struct State {
-    int room;
-    vector<bool> lights;
-    int steps;
-    vector<string> actions;
-};
+int bfs(int numRooms, int numDoors, int numSwitches, int testNum, vector<pair<int, int>>& doorConnections, vector<pair<int, int>>& switchConnections) {
+    int totalStates = numRooms * (1 << numRooms);
+    vector<vector<int>> adjacencyList(totalStates, vector<int>());
 
-int main() {
-    int test_case = 1;
-    while (true) {
-        
-        int r, d, s;
-        cin >> r >> d >> s;
-        if (r == 0 && d == 0 && s == 0) break;
-
-        vector<vector<int>> adj(r + 1);
-        vector<vector<int>> switches(r + 1);
-
-        for (int i = 0; i < d; ++i) {
-            int u, v;
-            cin >> u >> v;
-            adj[u].push_back(v);
-            adj[v].push_back(u);
-        }
-
-        for (int i = 0; i < s; ++i) {
-            int k, l;
-            cin >> k >> l;
-            switches[k].push_back(l);
-        }
-        
-        queue<State> q;
-        unordered_set<string> visited;
-
-        vector<bool> initial_lights(r + 1, false);
-        initial_lights[1] = true;
-        q.push({1, initial_lights, 0, {}});
-
-        bool solved = false;
-        State final_state;
-
-        auto state_to_string = [](int room, const vector<bool>& lights) {
-            string state = to_string(room) + ":";
-            for (bool light : lights) state += (light ? "1" : "0");
-            return state;
-        };
-
-        while (!q.empty() && !solved) {
-            State current = q.front();
-            q.pop();
-
-            string state_str = state_to_string(current.room, current.lights);
-            if (visited.count(state_str)) continue;
-            visited.insert(state_str);
-
-            if (current.room == r) {
-                bool only_bedroom_light_on = true;
-                for (int i = 1; i <= r; ++i) {
-                    if (i != r && current.lights[i]) {
-                        only_bedroom_light_on = false;
-                        cout << "Room " << i << " light is on" << endl;
-                        break;
-                    }
-                }
-                if (only_bedroom_light_on && current.lights[r] ) {
-                cout<<only_bedroom_light_on<<endl;
-
-                    solved = true;
-                    final_state = current;
-                    break;
-                }
-            }
-            
-            for (int next_room : adj[current.room]) {
-                if (current.lights[next_room]) {
-                    State next_state = current;
-                    next_state.room = next_room;
-                    next_state.steps++;
-                    next_state.actions.push_back("Move to room " + to_string(next_room) + ".");
-                    q.push(next_state);
-                }
-            }
-
-            for (int light : switches[current.room]) {
-                if (!current.lights[light]) {
-                    State next_state = current;
-                    next_state.lights[light] = true;
-                    next_state.steps++;
-                    next_state.actions.push_back("Switch on light in room " + to_string(light) + ".");
-                    q.push(next_state);
-                }
-            }
-
-            for (int light : switches[current.room]) {
-                if (current.lights[light]) {
-                    State next_state = current;
-                    next_state.lights[light] = false;
-                    next_state.steps++;
-                    next_state.actions.push_back("Switch off light in room " + to_string(light) + ".");
-                    q.push(next_state);
-                }
+    for (int i = 0; i < numDoors; ++i) {
+        int room1 = doorConnections[i].first - 1, room2 = doorConnections[i].second - 1;
+        for (int state = 0; state < (1 << numRooms); ++state) {
+            int fromState = (room1 << numRooms) + state;
+            int toState = (room2 << numRooms) + state;
+            if (((fromState >> room1) % 2 == 1) && ((toState >> room2) % 2 == 1)) {
+                adjacencyList[fromState].push_back(toState);
+                adjacencyList[toState].push_back(fromState);
             }
         }
-
-        cout << "Villa #" << test_case << endl;
-        if (solved) {
-            cout << "The problem can be solved in " << final_state.steps << " steps:" << endl;
-            for (const string& action : final_state.actions) {
-                cout << "- " << action << endl;
-            }
-        } else {
-            cout << "The problem cannot be solved." << endl;
-        }
-        cout << endl;
-
-        test_case++;
     }
 
+    for (int i = 0; i < numSwitches; ++i) {
+        int room = switchConnections[i].first - 1, switchRoom = switchConnections[i].second - 1;
+        for (int state = 0; state < (1 << numRooms); ++state) {
+            int fromState = (room << numRooms) + state;
+            int toState = fromState ^ (1 << switchRoom);
+            adjacencyList[fromState].push_back(toState);
+        }
+    }
+
+    vector<bool> visited(totalStates, false);
+    visited[1] = true;
+    queue<int> toVisit;
+    toVisit.push(1);
+    vector<int> bfsTree(totalStates, -1);
+    bool finished = false;
+
+    while (!toVisit.empty() && !finished) {
+        int currentState = toVisit.front();
+        toVisit.pop();
+        for (int nextState : adjacencyList[currentState]) {
+            if (!visited[nextState]) {
+                visited[nextState] = true;
+                bfsTree[nextState] = currentState;
+                toVisit.push(nextState);
+            }
+        }
+    }
+
+    int finalState = ((numRooms - 1) << numRooms) + (1 << (numRooms - 1));
+    vector<int> path;
+    path.push_back(finalState);
+    while (finalState != -1 && finalState != 1) {
+        finalState = bfsTree[finalState];
+        if (finalState != -1)
+            path.push_back(finalState);
+    }
+
+    int pathLength = path.size();
+    cout << "Villa #" << testNum << endl;
+    if (pathLength == 0 || path[pathLength - 1] != 1)
+        cout << "The problem cannot be solved." << endl;
+    else {
+        cout << "The problem can be solved in " << pathLength - 1 << " steps:" << endl;
+        for (int i = pathLength - 1; i >= 1; i--) {
+            int fromState = path[i], toState = path[i - 1];
+            if ((fromState >> numRooms) == (toState >> numRooms)) {
+                int difference = abs(fromState - toState);
+                int room = 0;
+                while (difference >>= 1) ++room;
+                if (fromState > toState)
+                    cout << "- Switch off light in room " << (room + 1) << "." << endl;
+                else
+                    cout << "- Switch on light in room " << (room + 1) << "." << endl;
+            } else {
+                cout << "- Move to room " << ((toState >> numRooms) + 1) << "." << endl;
+            }
+        }
+    }
+    cout << endl;
+    return pathLength;
+}
+
+int main() {
+    int numRooms, numDoors, numSwitches, testCase = 0;
+    while (cin >> numRooms >> numDoors >> numSwitches, numRooms != 0 || numDoors != 0 || numSwitches != 0) {
+        vector<pair<int, int>> doorConnections(numDoors);
+        vector<pair<int, int>> switchConnections(numSwitches);
+        for (int i = 0; i < numDoors; ++i) {
+            cin >> doorConnections[i].first >> doorConnections[i].second;
+        }
+        for (int i = 0; i < numSwitches; ++i) {
+            cin >> switchConnections[i].first >> switchConnections[i].second;
+        }
+        bfs(numRooms, numDoors, numSwitches, ++testCase, doorConnections, switchConnections);
+    }
     return 0;
 }
