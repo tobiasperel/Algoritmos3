@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <tuple>
 #include <queue>
 #include <unordered_set>
 #include <string>
@@ -13,28 +14,10 @@ struct State {
     vector<string> actions;
 };
 
-string state_to_string(const State& state) {
-    string state_str = to_string(state.room) + ":";
-    for (bool light : state.lights) state_str += (light ? "1" : "0");
-    return state_str;
-}
-
-bool is_valid_state(const State& state, int r) {
-    // Verificar que no se entre a una habitación oscura
-    if (!state.lights[state.room]) return false;
-    // Verificar que solo la luz del dormitorio esté encendida al llegar
-    if (state.room == r) {
-        for (int i = 1; i < r; ++i) {
-            if (state.lights[i]) return false;
-        }
-        return true; // Asegurar que la luz del dormitorio está encendida
-    }
-    return true;
-}
-
 int main() {
     int test_case = 1;
     while (true) {
+        
         int r, d, s;
         cin >> r >> d >> s;
         if (r == 0 && d == 0 && s == 0) break;
@@ -54,7 +37,7 @@ int main() {
             cin >> k >> l;
             switches[k].push_back(l);
         }
-
+        
         queue<State> q;
         unordered_set<string> visited;
 
@@ -65,20 +48,38 @@ int main() {
         bool solved = false;
         State final_state;
 
+        auto state_to_string = [](int room, const vector<bool>& lights) {
+            string state = to_string(room) + ":";
+            for (bool light : lights) state += (light ? "1" : "0");
+            return state;
+        };
+
         while (!q.empty() && !solved) {
             State current = q.front();
             q.pop();
 
-            string state_str = state_to_string(current);
+            string state_str = state_to_string(current.room, current.lights);
             if (visited.count(state_str)) continue;
             visited.insert(state_str);
 
-            if (current.room == r && is_valid_state(current, r)) {
-                solved = true;
-                final_state = current;
-                break;
-            }
+            if (current.room == r) {
+                bool only_bedroom_light_on = true;
+                for (int i = 1; i <= r; ++i) {
+                    if (i != r && current.lights[i]) {
+                        only_bedroom_light_on = false;
+                        cout << "Room " << i << " light is on" << endl;
+                        break;
+                    }
+                }
+                if (only_bedroom_light_on && current.lights[r] ) {
+                cout<<only_bedroom_light_on<<endl;
 
+                    solved = true;
+                    final_state = current;
+                    break;
+                }
+            }
+            
             for (int next_room : adj[current.room]) {
                 if (current.lights[next_room]) {
                     State next_state = current;
@@ -90,12 +91,23 @@ int main() {
             }
 
             for (int light : switches[current.room]) {
-                State next_state = current;
-                next_state.lights[light] = !next_state.lights[light];
-                next_state.steps++;
-                string action = next_state.lights[light] ? "Switch on" : "Switch off";
-                next_state.actions.push_back(action + " light in room " + to_string(light) + ".");
-                q.push(next_state);
+                if (!current.lights[light]) {
+                    State next_state = current;
+                    next_state.lights[light] = true;
+                    next_state.steps++;
+                    next_state.actions.push_back("Switch on light in room " + to_string(light) + ".");
+                    q.push(next_state);
+                }
+            }
+
+            for (int light : switches[current.room]) {
+                if (current.lights[light]) {
+                    State next_state = current;
+                    next_state.lights[light] = false;
+                    next_state.steps++;
+                    next_state.actions.push_back("Switch off light in room " + to_string(light) + ".");
+                    q.push(next_state);
+                }
             }
         }
 
