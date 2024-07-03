@@ -71,7 +71,7 @@ int main() {
     g.addEdge(2, 3, 5);  // Nodo 3 a Nodo 4 con peso 5
     g.addEdge(0, 4, 6);  // Nodo 1 a Nodo 5 con peso 6
     g.addEdge(4, 5, 5);  // Nodo 5 a Nodo 6 con peso 5
-    g.addEdge(3, 1, -4); // Arista negativa para probar el ciclo negativo
+    g.addEdge(3, 1, -40); // Arista negativa para probar el ciclo negativo
 
     if (!g.bellmanFord(0)) { // Ejecutar Bellman-Ford desde el nodo 0
         cout << "No se detectaron ciclos negativos en el grafo." << endl;
